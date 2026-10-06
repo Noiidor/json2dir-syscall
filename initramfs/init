@@ -1,0 +1,40 @@
+#!/bin/busybox sh
+# initramfs init: load json2dir.ko and verify it creates the tree.
+
+/bin/busybox --install -s /bin
+export PATH=/bin
+
+mkdir -p /proc /sys /dev /tmp
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev 2>/dev/null || mount -t tmpfs tmpfs /dev
+
+echo "== insmod =="
+insmod /json2dir.ko
+echo "insmod exit=$?"
+
+mkdir -p /work
+cd /work
+
+echo "== write payload =="
+cat /payload > /sys/kernel/json2dir/data
+echo "store exit=$?"
+
+echo "== tree =="
+find /work | sort
+
+echo "== greeting content =="
+cat /work/greeting
+echo
+
+echo "== script content =="
+cat /work/script
+echo
+
+echo "== modes =="
+ls -la /work /work/dir
+echo "== symlink =="
+ls -l /work/symlink
+
+echo "== DONE =="
+poweroff -f
