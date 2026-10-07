@@ -1,0 +1,23 @@
+#!/bin/busybox sh
+export PATH=/bin
+/bin/busybox --install -s /bin
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+fail() { echo J2D_INFRA_FAILURE; poweroff -f; }
+insmod /json2dir.ko || fail
+mkdir /work
+cd /work
+tar xpf /setup.tar || fail
+cd /work/root || fail
+endpoint=/sys/kernel/json2dir/data
+[ ! -e /dev/json2dir ] || endpoint=/dev/json2dir
+/client "$endpoint" 1000 100 "$(cat /mask)" < /input
+result=$?
+echo "J2D_RESULT=$result"
+stty -F /dev/ttyS1 raw -echo
+cd /work
+tar cf /result.tar . || fail
+cat /result.tar > /dev/ttyS1
+echo J2D_DONE
+poweroff -f

@@ -2,7 +2,8 @@
 /*
  * json2dir: convert a JSON object into a directory tree, in-kernel.
  *
- * Write to /sys/kernel/json2dir/data with the payload
+ * Write one complete request to /dev/json2dir (or, for small requests,
+ * /sys/kernel/json2dir/data) with the payload
  *
  *     <base-path>\0<json>
  *
@@ -33,9 +34,12 @@
 #include <linux/file.h>
 #include <linux/mnt_idmapping.h>
 #include <linux/uaccess.h>
+#include <linux/miscdevice.h>
+#include <linux/vmalloc.h>
 
-#define MAX_DEPTH 64
-#define MAX_NODES 4096
+#define MAX_DEPTH 128
+#define MAX_NODES 16384
+#define MAX_PAYLOAD (4 * 1024 * 1024)
 
 /* ------------------------------------------------------------------ */
 /* JSON DOM                                                            */
@@ -57,6 +61,8 @@ struct json_pair {
 
 struct json_value {
 	enum json_type type;
+	size_t str_len;
+	struct json_value *next_alloc;
 	union {
 		struct {
 			struct json_pair *pairs;
@@ -73,46 +79,46 @@ struct json_value {
 struct jparser {
 	const char *p;
 	const char *end;
-	unsigned int depth;
 	unsigned int nodes;
+	struct json_value *first, *last;
 };
 
+/* Allocation order is independent of tree shape: destruction never recurses. */
 static void json_free(struct json_value *v)
 {
-	unsigned int i;
+	while (v) {
+		struct json_value *next = v->next_alloc;
+		unsigned int i;
 
-	if (!v)
-		return;
-
-	switch (v->type) {
-	case J_OBJECT:
-		for (i = 0; i < v->u.obj.count; i++) {
-			kfree(v->u.obj.pairs[i].key);
-			json_free(v->u.obj.pairs[i].value);
+		if (v->type == J_OBJECT) {
+			for (i = 0; i < v->u.obj.count; i++)
+				kvfree(v->u.obj.pairs[i].key);
+			kfree(v->u.obj.pairs);
+		} else if (v->type == J_ARRAY) {
+			kfree(v->u.arr.items);
+		} else if (v->type == J_STRING) {
+			kvfree(v->u.str);
 		}
-		kfree(v->u.obj.pairs);
-		break;
-	case J_ARRAY:
-		for (i = 0; i < v->u.arr.count; i++)
-			json_free(v->u.arr.items[i]);
-		kfree(v->u.arr.items);
-		break;
-	case J_STRING:
-		kfree(v->u.str);
-		break;
-	default:
-		break;
+		kfree(v);
+		v = next;
 	}
-
-	kfree(v);
 }
 
-static struct json_value *json_new(enum json_type t)
+static struct json_value *json_new(struct jparser *jp, enum json_type t)
 {
-	struct json_value *v = kzalloc(sizeof(*v), GFP_KERNEL);
+	struct json_value *v;
 
-	if (v)
-		v->type = t;
+	if (++jp->nodes > MAX_NODES)
+		return ERR_PTR(-E2BIG);
+	v = kzalloc(sizeof(*v), GFP_KERNEL);
+	if (!v)
+		return ERR_PTR(-ENOMEM);
+	v->type = t;
+	if (jp->last)
+		jp->last->next_alloc = v;
+	else
+		jp->first = v;
+	jp->last = v;
 	return v;
 }
 
@@ -120,7 +126,12 @@ static int obj_add(struct json_value *v, char *key, struct json_value *val)
 {
 	unsigned int n = v->u.obj.count;
 	struct json_pair *np;
+	unsigned int i;
 
+	/* RFC 4.2 permits rejecting duplicates, including escaped equivalents. */
+	for (i = 0; i < n; i++)
+		if (!strcmp(v->u.obj.pairs[i].key, key))
+			return -EINVAL;
 	np = krealloc_array(v->u.obj.pairs, n + 1, sizeof(*np), GFP_KERNEL);
 	if (!np)
 		return -ENOMEM;
@@ -195,12 +206,13 @@ static unsigned int utf8_encode(unsigned int cp, char *out)
 
 /*
  * Parse a JSON string (the leading '"' must be at jp->p).  Returns a
- * kmalloc'd, NUL-terminated string or ERR_PTR.
+ * kvmalloc'd string with an explicit byte length and a trailing NUL, or ERR_PTR.
  */
-static char *jp_string(struct jparser *jp)
+static char *jp_string(struct jparser *jp, size_t *length)
 {
 	const char *p = jp->p;
 	const char *end = jp->end;
+	const char *limit;
 	char *out;
 	size_t n = 0;
 
@@ -208,7 +220,17 @@ static char *jp_string(struct jparser *jp)
 		return ERR_PTR(-EINVAL);
 	p++;
 
-	out = kmalloc(end - p + 1, GFP_KERNEL);
+	/* Decoding cannot exceed the raw token length. Avoid allocating the
+	 * remainder of a large document separately for every short string. */
+	for (limit = p; limit < end && *limit != '"'; limit++) {
+		if (*limit == '\\') {
+			if (++limit == end)
+				return ERR_PTR(-EINVAL);
+		}
+	}
+	if (limit == end)
+		return ERR_PTR(-EINVAL);
+	out = kvmalloc(limit - p + 1, GFP_KERNEL);
 	if (!out)
 		return ERR_PTR(-ENOMEM);
 
@@ -219,6 +241,7 @@ static char *jp_string(struct jparser *jp)
 			p++;
 			jp->p = p;
 			out[n] = '\0';
+			*length = n;
 			return out;
 		}
 
@@ -289,129 +312,8 @@ static char *jp_string(struct jparser *jp)
 	}
 
 bad:
-	kfree(out);
+	kvfree(out);
 	return ERR_PTR(-EINVAL);
-}
-
-static struct json_value *jp_value(struct jparser *jp);
-
-static struct json_value *jp_object(struct jparser *jp)
-{
-	struct json_value *v = json_new(J_OBJECT);
-	char *key;
-	struct json_value *val;
-	int err;
-
-	if (!v)
-		return ERR_PTR(-ENOMEM);
-
-	jp->p++; /* consume '{' */
-	jp_skip_ws(jp);
-
-	if (jp->p < jp->end && *jp->p == '}') {
-		jp->p++;
-		return v;
-	}
-
-	for (;;) {
-		jp_skip_ws(jp);
-		if (jp->p >= jp->end || *jp->p != '"') {
-			err = -EINVAL;
-			goto fail;
-		}
-
-		key = jp_string(jp);
-		if (IS_ERR(key)) {
-			err = PTR_ERR(key);
-			goto fail;
-		}
-
-		jp_skip_ws(jp);
-		if (jp->p >= jp->end || *jp->p != ':') {
-			kfree(key);
-			err = -EINVAL;
-			goto fail;
-		}
-		jp->p++;
-
-		val = jp_value(jp);
-		if (IS_ERR(val)) {
-			kfree(key);
-			err = PTR_ERR(val);
-			goto fail;
-		}
-
-		err = obj_add(v, key, val);
-		if (err) {
-			kfree(key);
-			json_free(val);
-			goto fail;
-		}
-
-		jp_skip_ws(jp);
-		if (jp->p < jp->end && *jp->p == ',') {
-			jp->p++;
-			continue;
-		}
-		if (jp->p < jp->end && *jp->p == '}') {
-			jp->p++;
-			return v;
-		}
-		err = -EINVAL;
-		goto fail;
-	}
-
-fail:
-	json_free(v);
-	return ERR_PTR(err);
-}
-
-static struct json_value *jp_array(struct jparser *jp)
-{
-	struct json_value *v = json_new(J_ARRAY);
-	struct json_value *item;
-	int err;
-
-	if (!v)
-		return ERR_PTR(-ENOMEM);
-
-	jp->p++; /* consume '[' */
-	jp_skip_ws(jp);
-
-	if (jp->p < jp->end && *jp->p == ']') {
-		jp->p++;
-		return v;
-	}
-
-	for (;;) {
-		item = jp_value(jp);
-		if (IS_ERR(item)) {
-			err = PTR_ERR(item);
-			goto fail;
-		}
-
-		err = arr_add(v, item);
-		if (err) {
-			json_free(item);
-			goto fail;
-		}
-
-		jp_skip_ws(jp);
-		if (jp->p < jp->end && *jp->p == ',') {
-			jp->p++;
-			continue;
-		}
-		if (jp->p < jp->end && *jp->p == ']') {
-			jp->p++;
-			return v;
-		}
-		err = -EINVAL;
-		goto fail;
-	}
-
-fail:
-	json_free(v);
-	return ERR_PTR(err);
 }
 
 static struct json_value *jp_literal(struct jparser *jp, enum json_type t,
@@ -423,9 +325,9 @@ static struct json_value *jp_literal(struct jparser *jp, enum json_type t,
 	if (jp->end - jp->p < (long)len || strncmp(jp->p, word, len))
 		return ERR_PTR(-EINVAL);
 
-	v = json_new(t);
-	if (!v)
-		return ERR_PTR(-ENOMEM);
+	v = json_new(jp, t);
+	if (IS_ERR(v))
+		return v;
 
 	jp->p += len;
 	return v;
@@ -465,93 +367,171 @@ static struct json_value *jp_number(struct jparser *jp)
 			p++;
 	}
 
-	v = json_new(J_NUMBER);
-	if (!v)
-		return ERR_PTR(-ENOMEM);
+	v = json_new(jp, J_NUMBER);
+	if (IS_ERR(v))
+		return v;
 
 	jp->p = p;
 	return v;
 }
 
+/* Read one token; container children are handled by json_parse's heap stack. */
 static struct json_value *jp_value(struct jparser *jp)
 {
 	struct json_value *v;
-
-	if (jp->depth >= MAX_DEPTH)
-		return ERR_PTR(-EINVAL);
-	if (++jp->nodes > MAX_NODES)
-		return ERR_PTR(-EINVAL);
+	char *str;
+	size_t len;
 
 	jp_skip_ws(jp);
-	if (jp->p >= jp->end)
+	if (jp->p == jp->end)
 		return ERR_PTR(-EINVAL);
-
-	jp->depth++;
-
 	switch (*jp->p) {
 	case '{':
-		v = jp_object(jp);
-		break;
+		jp->p++;
+		return json_new(jp, J_OBJECT);
 	case '[':
-		v = jp_array(jp);
-		break;
-	case '"': {
-		char *s = jp_string(jp);
-
-		if (IS_ERR(s)) {
-			jp->depth--;
-			return ERR_CAST(s);
+		jp->p++;
+		return json_new(jp, J_ARRAY);
+	case '"':
+		str = jp_string(jp, &len);
+		if (IS_ERR(str))
+			return ERR_CAST(str);
+		v = json_new(jp, J_STRING);
+		if (IS_ERR(v)) {
+			kvfree(str);
+			return v;
 		}
-		v = json_new(J_STRING);
-		if (!v) {
-			kfree(s);
-			jp->depth--;
-			return ERR_PTR(-ENOMEM);
-		}
-		v->u.str = s;
-		break;
+		v->u.str = str;
+		v->str_len = len;
+		return v;
+	case 't': return jp_literal(jp, J_BOOL, "true");
+	case 'f': return jp_literal(jp, J_BOOL, "false");
+	case 'n': return jp_literal(jp, J_NULL, "null");
+	default: return jp_number(jp);
 	}
-	case 't':
-		v = jp_literal(jp, J_BOOL, "true");
-		break;
-	case 'f':
-		v = jp_literal(jp, J_BOOL, "false");
-		break;
-	case 'n':
-		v = jp_literal(jp, J_NULL, "null");
-		break;
-	default:
-		v = jp_number(jp);
-		break;
-	}
-
-	jp->depth--;
-	return v;
 }
 
-/*
- * Parse a NUL-terminated JSON text.  Returns the top-level value, which
- * must be an object, or ERR_PTR.
- */
+static bool valid_utf8(const unsigned char *s, size_t len)
+{
+	size_t i = 0;
+
+	while (i < len) {
+		unsigned int c = s[i++], cp, min, n;
+
+		if (c < 0x80)
+			continue;
+		if (c >= 0xc2 && c <= 0xdf) {
+			cp = c & 0x1f; min = 0x80; n = 1;
+		} else if (c >= 0xe0 && c <= 0xef) {
+			cp = c & 0xf; min = 0x800; n = 2;
+		} else if (c >= 0xf0 && c <= 0xf4) {
+			cp = c & 7; min = 0x10000; n = 3;
+		} else {
+			return false;
+		}
+		if (len - i < n)
+			return false;
+		while (n--) {
+			c = s[i++];
+			if ((c & 0xc0) != 0x80)
+				return false;
+			cp = (cp << 6) | (c & 0x3f);
+		}
+		if (cp < min || cp > 0x10ffff || (cp >= 0xd800 && cp <= 0xdfff))
+			return false;
+	}
+	return true;
+}
+
+struct parse_frame {
+	struct json_value *value;
+	/* 0: first member or end; 1: member required; 2: separator or end. */
+	unsigned int state;
+};
+
 static struct json_value *json_parse(const char *text, size_t len)
 {
-	struct jparser jp = {
-		.p = text,
-		.end = text + len,
-	};
-	struct json_value *v;
+	struct jparser jp = { .p = text, .end = text + len };
+	struct parse_frame *stack;
+	struct json_value *root, *child;
+	unsigned int depth = 0;
+	int err = -EINVAL;
 
-	v = jp_value(&jp);
-	if (IS_ERR(v))
-		return v;
-
-	jp_skip_ws(&jp);
-	if (jp.p != jp.end) {
-		json_free(v);
-		return ERR_PTR(-EINVAL); /* trailing garbage */
+	if (!valid_utf8((const unsigned char *)text, len))
+		return ERR_PTR(-EINVAL);
+	stack = kcalloc(MAX_DEPTH, sizeof(*stack), GFP_KERNEL);
+	if (!stack)
+		return ERR_PTR(-ENOMEM);
+	root = jp_value(&jp);
+	if (IS_ERR(root)) {
+		err = PTR_ERR(root);
+		goto fail;
 	}
+	if (root->type != J_OBJECT)
+		goto fail;
+	stack[depth++].value = root;
+	while (depth) {
+		struct parse_frame *f = &stack[depth - 1];
+		struct json_value *parent = f->value;
+		char close = parent->type == J_OBJECT ? '}' : ']';
+		char *key = NULL;
+		size_t key_len;
 
-	return v;
+		jp_skip_ws(&jp);
+		if (jp.p == jp.end)
+			goto invalid;
+		if (f->state != 1 && *jp.p == close) {
+			jp.p++;
+			depth--;
+			continue;
+		}
+		if (f->state == 2) {
+			if (*jp.p++ != ',')
+				goto invalid;
+			f->state = 1;
+			continue;
+		}
+		if (parent->type == J_OBJECT) {
+			key = jp_string(&jp, &key_len);
+			if (IS_ERR(key)) {
+				err = PTR_ERR(key);
+				goto fail;
+			}
+			jp_skip_ws(&jp);
+			if (memchr(key, 0, key_len) || jp.p == jp.end || *jp.p++ != ':') {
+				kvfree(key);
+				goto invalid;
+			}
+		}
+		child = jp_value(&jp);
+		if (IS_ERR(child)) {
+			kvfree(key);
+			err = PTR_ERR(child);
+			goto fail;
+		}
+		err = parent->type == J_OBJECT ? obj_add(parent, key, child) : arr_add(parent, child);
+		if (err) {
+			kvfree(key);
+			goto fail;
+		}
+		f->state = 2;
+		if (child->type == J_OBJECT || child->type == J_ARRAY) {
+			if (depth == MAX_DEPTH)
+				goto invalid;
+			stack[depth++] = (struct parse_frame) { .value = child };
+		}
+	}
+	jp_skip_ws(&jp);
+	if (jp.p != jp.end)
+		goto invalid;
+	kfree(stack);
+	return root;
+invalid:
+	err = -EINVAL;
+fail:
+	json_free(jp.first);
+	kfree(stack);
+	return ERR_PTR(err);
 }
 
 /* ------------------------------------------------------------------ */
@@ -605,7 +585,7 @@ static int make_dir(const char *path)
 		return PTR_ERR(dentry);
 
 	idmap = mnt_idmap(parent.mnt);
-	dentry = vfs_mkdir(idmap, d_inode(parent.dentry), dentry, 0755, NULL);
+	dentry = vfs_mkdir(idmap, d_inode(parent.dentry), dentry, 0777, NULL);
 	if (IS_ERR(dentry))
 		err = PTR_ERR(dentry);
 	else
@@ -633,15 +613,15 @@ static int make_symlink(const char *path, const char *target)
 	return err;
 }
 
-/* Try to remove whatever (file or symlink) is at path; errors ignored. */
-static void try_unlink(const char *path)
+/* Remove the entry itself. Directories remain for merge/error handling. */
+static int try_unlink(const char *path)
 {
 	const char *slash;
 	const char *parent_str;
 	const char *name_str;
 	char *parent_buf = NULL;
 	struct path parent;
-	struct qstr name;
+	struct qstr name = { };
 	struct dentry *dentry;
 	struct mnt_idmap *idmap;
 	int err;
@@ -658,15 +638,17 @@ static void try_unlink(const char *path)
 
 		parent_buf = kmalloc(plen + 1, GFP_KERNEL);
 		if (!parent_buf)
-			return;
+			return -ENOMEM;
 		memcpy(parent_buf, path, plen);
 		parent_buf[plen] = '\0';
 		parent_str = parent_buf;
 		name_str = slash + 1;
 	}
 
-	if (name_str[0] == '\0')
+	if (name_str[0] == '\0') {
+		err = -EINVAL;
 		goto out;
+	}
 
 	err = kern_path(parent_str, LOOKUP_DIRECTORY | LOOKUP_FOLLOW, &parent);
 	if (err)
@@ -675,32 +657,40 @@ static void try_unlink(const char *path)
 	name.name = name_str;
 	name.len = strlen(name_str);
 
+	err = mnt_want_write(parent.mnt);
+	if (err) {
+		path_put(&parent);
+		goto out;
+	}
 	idmap = mnt_idmap(parent.mnt);
 	dentry = start_removing(idmap, parent.dentry, &name);
 	if (IS_ERR(dentry)) {
+		err = PTR_ERR(dentry);
+		mnt_drop_write(parent.mnt);
 		path_put(&parent);
 		goto out;
 	}
 
-	vfs_unlink(idmap, d_inode(parent.dentry), dentry, NULL);
+	err = vfs_unlink(idmap, d_inode(parent.dentry), dentry, NULL);
 	end_dirop(dentry);
+	mnt_drop_write(parent.mnt);
 	path_put(&parent);
 
 out:
 	kfree(parent_buf);
+	return err == -ENOENT || err == -EISDIR ? 0 : err;
 }
 
 static int file_add_exec(struct file *f)
 {
 	struct inode *inode = file_inode(f);
 	struct mnt_idmap *idmap = mnt_idmap(f->f_path.mnt);
-	struct iattr attr;
+	struct iattr attr = { };
 	int err;
 
 	attr.ia_valid = ATTR_MODE | ATTR_CTIME;
-	attr.ia_mode = inode->i_mode | 0111;
-
 	inode_lock(inode);
+	attr.ia_mode = inode->i_mode | 0111;
 	err = setattr_prepare(idmap, f->f_path.dentry, &attr);
 	if (!err)
 		err = notify_change(idmap, f->f_path.dentry, &attr, NULL);
@@ -717,15 +707,19 @@ static int write_file(const char *path, const char *data, size_t len,
 	ssize_t written;
 	int err = 0;
 
-	f = filp_open(path, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	f = filp_open(path, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW, 0666);
 	if (IS_ERR(f))
 		return PTR_ERR(f);
 
-	written = kernel_write(f, data, len, &pos);
-	if (written < 0)
-		err = written;
-	else if ((size_t)written != len)
-		err = -EIO;
+	while (len) {
+		written = kernel_write(f, data, len, &pos);
+		if (written <= 0) {
+			err = written < 0 ? written : -EIO;
+			break;
+		}
+		data += written;
+		len -= written;
+	}
 
 	if (!err && executable)
 		err = file_add_exec(f);
@@ -738,89 +732,140 @@ static int write_file(const char *path, const char *data, size_t len,
 /* Tree walker                                                         */
 /* ------------------------------------------------------------------ */
 
-static int json_object_to_dir(const char *base, struct json_value *object,
-			      unsigned int depth);
-
-static int handle_value(const char *base, const char *name,
-			struct json_value *value, unsigned int depth)
+static bool string_is(const struct json_value *v, const char *s)
 {
-	char *path;
-	int err;
+	return v->type == J_STRING && v->str_len == strlen(s) &&
+	       !memcmp(v->u.str, s, v->str_len);
+}
 
-	if (!valid_component(name))
-		return -EINVAL;
+/* Validate the whole scheme before any filesystem operation. */
+static int validate_document(struct json_value *root)
+{
+	struct json_value *node;
+	unsigned int i;
 
-	path = path_join(base, name);
-	if (!path)
-		return -ENOMEM;
+	for (node = root; node; node = node->next_alloc) {
+		if (node->type != J_OBJECT)
+			continue;
+		for (i = 0; i < node->u.obj.count; i++) {
+			struct json_pair *pair = &node->u.obj.pairs[i];
+			struct json_value *v = pair->value;
+			struct json_value **items;
 
-	/* Ignore errors: delete an existing file/symlink first, mirroring
-	 * the original's fs::remove_file(). */
-	try_unlink(path);
-
-	switch (value->type) {
-	case J_OBJECT:
-		err = make_dir(path);
-		if (err == -EEXIST)
-			err = 0;
-		if (!err)
-			err = json_object_to_dir(path, value, depth + 1);
-		break;
-
-	case J_STRING:
-		err = write_file(path, value->u.str, strlen(value->u.str), false);
-		break;
-
-	case J_ARRAY: {
-		struct json_value **items = value->u.arr.items;
-		const char *kind, *payload;
-
-		if (value->u.arr.count != 2 ||
-		    items[0]->type != J_STRING ||
-		    items[1]->type != J_STRING) {
-			err = -EINVAL;
-			break;
+			if (!valid_component(pair->key))
+				return -EINVAL;
+			if (v->type == J_OBJECT || v->type == J_STRING)
+				continue;
+			if (v->type != J_ARRAY || v->u.arr.count != 2)
+				return -EINVAL;
+			items = v->u.arr.items;
+			if (items[1]->type != J_STRING)
+				return -EINVAL;
+			if (string_is(items[0], "link")) {
+				if (!items[1]->str_len ||
+				    memchr(items[1]->u.str, 0, items[1]->str_len))
+					return -EINVAL;
+			} else if (!string_is(items[0], "script")) {
+				return -EINVAL;
+			}
 		}
-
-		kind = items[0]->u.str;
-		payload = items[1]->u.str;
-
-		if (strcmp(kind, "link") == 0) {
-			err = make_symlink(path, payload);
-		} else if (strcmp(kind, "script") == 0) {
-			err = write_file(path, payload, strlen(payload), true);
-		} else {
-			err = -EINVAL;
-		}
-		break;
 	}
+	return 0;
+}
 
-	default:
-		err = -EINVAL; /* number/bool/null not allowed */
-		break;
-	}
+static int ensure_dir(const char *path)
+{
+	struct path existing;
+	int err = make_dir(path);
 
-	kfree(path);
+	if (err != -EEXIST)
+		return err;
+	/* EEXIST alone does not establish that the entry is a directory. */
+	err = kern_path(path, 0, &existing);
+	if (err)
+		return err;
+	err = d_is_dir(existing.dentry) ? 0 : -ENOTDIR;
+	path_put(&existing);
 	return err;
 }
 
-static int json_object_to_dir(const char *base, struct json_value *object,
-			      unsigned int depth)
+struct walk_frame {
+	const struct json_value *object;
+	char *path;
+	unsigned int index;
+};
+
+static int json_object_to_dir(const char *base, struct json_value *object)
 {
-	unsigned int i;
-	int err;
+	struct walk_frame *stack;
+	unsigned int depth = 1;
+	int err = validate_document(object);
 
-	if (depth >= MAX_DEPTH)
-		return -EINVAL;
-
-	for (i = 0; i < object->u.obj.count; i++) {
-		err = handle_value(base, object->u.obj.pairs[i].key,
-				   object->u.obj.pairs[i].value, depth);
-		if (err)
-			return err;
+	if (err)
+		return err;
+	stack = kcalloc(MAX_DEPTH, sizeof(*stack), GFP_KERNEL);
+	if (!stack)
+		return -ENOMEM;
+	stack[0].object = object;
+	stack[0].path = kstrdup(base, GFP_KERNEL);
+	if (!stack[0].path) {
+		err = -ENOMEM;
+		goto out;
 	}
+	while (depth) {
+		struct walk_frame *f = &stack[depth - 1];
+		const struct json_pair *pair;
+		const struct json_value *v;
+		char *path;
 
-	return 0;
+		if (f->index == f->object->u.obj.count) {
+			kfree(f->path);
+			depth--;
+			continue;
+		}
+		pair = &f->object->u.obj.pairs[f->index++];
+		v = pair->value;
+		path = path_join(f->path, pair->key);
+		if (!path) {
+			err = -ENOMEM;
+			goto out;
+		}
+		err = try_unlink(path);
+		if (!err) {
+			if (v->type == J_OBJECT) {
+				err = ensure_dir(path);
+			} else if (v->type == J_STRING) {
+				err = write_file(path, v->u.str, v->str_len, false);
+			} else {
+				const struct json_value *payload = v->u.arr.items[1];
+
+				if (string_is(v->u.arr.items[0], "link"))
+					err = make_symlink(path, payload->u.str);
+				else
+					err = write_file(path, payload->u.str, payload->str_len, true);
+			}
+		}
+		if (err) {
+			kfree(path);
+			goto out;
+		}
+		if (v->type == J_OBJECT) {
+			if (depth == MAX_DEPTH) {
+				kfree(path);
+				err = -E2BIG;
+				goto out;
+			}
+			stack[depth++] = (struct walk_frame) { .object = v, .path = path };
+		} else {
+			kfree(path);
+		}
+		cond_resched();
+	}
+out:
+	while (depth)
+		kfree(stack[--depth].path);
+	kfree(stack);
+	return err;
 }
 
 /* ------------------------------------------------------------------ */
@@ -836,7 +881,9 @@ static int process_payload(const char *buf, size_t count)
 	size_t json_len;
 	int err;
 
-	copy = kmalloc(count + 1, GFP_KERNEL);
+	if (count > MAX_PAYLOAD)
+		return -E2BIG;
+	copy = kvmalloc(count + 1, GFP_KERNEL);
 	if (!copy)
 		return -ENOMEM;
 	memcpy(copy, buf, count);
@@ -871,12 +918,12 @@ static int process_payload(const char *buf, size_t count)
 		goto out_copy;
 	}
 
-	err = json_object_to_dir(base, root, 0);
+	err = json_object_to_dir(base, root);
 
 	json_free(root);
 
 out_copy:
-	kfree(copy);
+	kvfree(copy);
 	return err;
 }
 
@@ -891,6 +938,41 @@ static ssize_t data_store(struct kobject *kobj, struct kobj_attribute *attr,
 }
 
 static struct kobj_attribute data_attr = __ATTR(data, 0200, NULL, data_store);
+
+/* One write is one complete request; no shared staging buffer or commit state.
+ * Unlike a text sysfs attribute, the misc device accepts multi-page documents. */
+static ssize_t device_write(struct file *file, const char __user *buf,
+			    size_t count, loff_t *pos)
+{
+	char *payload;
+	int err;
+
+	if (count > MAX_PAYLOAD)
+		return -E2BIG;
+	payload = kvmalloc(count ? count : 1, GFP_KERNEL);
+	if (!payload)
+		return -ENOMEM;
+	if (copy_from_user(payload, buf, count)) {
+		kvfree(payload);
+		return -EFAULT;
+	}
+	err = process_payload(payload, count);
+	kvfree(payload);
+	return err ? err : count;
+}
+
+static const struct file_operations device_ops = {
+	.owner = THIS_MODULE,
+	.write = device_write,
+	.open = nonseekable_open,
+};
+
+static struct miscdevice json2dir_device = {
+	.minor = MISC_DYNAMIC_MINOR,
+	.name = "json2dir",
+	.fops = &device_ops,
+	.mode = 0600,
+};
 
 static struct kobject *json2dir_kobj;
 
@@ -908,12 +990,20 @@ static int __init json2dir_init(void)
 		return err;
 	}
 
-	pr_info("loaded; write '<base>\\0<json>' to /sys/kernel/json2dir/data\n");
+	err = misc_register(&json2dir_device);
+	if (err) {
+		sysfs_remove_file(json2dir_kobj, &data_attr.attr);
+		kobject_put(json2dir_kobj);
+		return err;
+	}
+
+	pr_info("loaded; write '<base>\\0<json>' to /dev/json2dir or /sys/kernel/json2dir/data\n");
 	return 0;
 }
 
 static void __exit json2dir_exit(void)
 {
+	misc_deregister(&json2dir_device);
 	sysfs_remove_file(json2dir_kobj, &data_attr.attr);
 	kobject_put(json2dir_kobj);
 	pr_info("unloaded\n");

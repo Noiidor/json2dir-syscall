@@ -1,0 +1,34 @@
+#!/bin/busybox sh
+export PATH=/bin
+/bin/busybox --install -s /bin
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+exec < /dev/ttyS0 > /dev/ttyS0 2>&1
+stty raw -echo
+insmod /json2dir.ko || poweroff -f
+echo J2D_READY
+while IFS= read -r request; do
+    rm -rf /work /request
+    mkdir /work /request
+    printf %s "$request" | base64 -d | tar xz -C /request || break
+    cd /work
+    tar xpf /request/setup.tar || break
+    cd /work/root || break
+    /client /dev/json2dir 1000 100 "$(cat /request/mask)" < /request/input > /request/stdout 2> /request/stderr
+    result=$?
+    echo "J2D_RESULT=$result"
+    printf J2D_STDERR=
+    base64 -w 0 /request/stderr
+    echo
+    printf J2D_STDOUT=
+    base64 -w 0 /request/stdout
+    echo
+    cd /work
+    tar czf /request/result.tar.gz . || break
+    printf J2D_TREE=
+    base64 -w 0 /request/result.tar.gz
+    echo
+    echo J2D_READY
+done
+poweroff -f

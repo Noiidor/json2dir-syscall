@@ -11,6 +11,10 @@ pkgs.mkShell {
     qemu_test
     cpio
     bash
+    python3
+    dotnet-sdk_10
+    util-linux
+    gzip
   ];
   shellHook = ''
     export KDIR="${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"

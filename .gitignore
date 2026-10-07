@@ -8,3 +8,6 @@
 .modules.order
 Module.symvers
 modules.order
+
+.build/
+__pycache__/

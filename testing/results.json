@@ -1,0 +1,2211 @@
+{
+  "implementations": [
+    {
+      "name": "json2dir-syscall",
+      "results": [
+        {
+          "case": "conformance/core/001-empty-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/002-regular-file",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/003-empty-file",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/004-content-is-exact",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/005-unicode-content",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/006-nul-in-content",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/007-escaped-content",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/008-nested-directories",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/009-deep-nesting",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/010-unicode-names",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/011-unusual-but-valid-names",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/012-symlink",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/013-symlink-absolute-target",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/014-symlink-parent-target",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/015-symlink-to-sibling",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/016-script",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/017-empty-script",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/018-upstream-example",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/019-whitespace-around-document",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/020-duplicate-names",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/100-invalid-json",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/101-invalid-utf8",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/102-empty-input",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/103-trailing-data",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/104-lone-surrogate",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/105-nan-literal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/106-root-array",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/107-root-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/108-root-number",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/109-root-null",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/110-value-number",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/111-value-boolean",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/112-value-null",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/113-nested-invalid-value",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/120-array-empty",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/121-array-one-element",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/122-array-three-elements",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/123-array-unknown-kind",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/124-array-kind-is-case-sensitive",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/125-array-non-string-kind",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/126-array-non-string-payload",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/127-array-object-payload",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/130-name-empty",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/131-name-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/132-name-dot-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/133-name-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/134-name-absolute",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/135-name-two-components",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/136-name-leading-dot-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/137-name-parent-traversal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/138-name-nul",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/core/139-nested-name-dot-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/200-file-replaces-file",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/201-shorter-content-truncates",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/202-directory-replaces-file",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/203-symlink-replaces-file",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/204-script-replaces-file",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/205-file-replaces-script",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/206-symlink-replaces-symlink",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/207-file-does-not-follow-symlink",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/208-script-does-not-follow-symlink",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/209-directory-does-not-follow-symlink",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/210-merge-into-directory",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/211-unlisted-entries-untouched",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/212-file-over-directory-fails",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/213-symlink-over-directory-fails",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/214-script-over-directory-fails",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "conformance/overwrite/215-trailing-slash-does-not-follow-symlink",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/001-escaped-dot-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/002-escaped-dot-dot-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/003-escaped-dot-dot-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/004-escaped-slash-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/005-escaped-nul-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/006-nested-escaped-dot-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/007-escaped-mixed-dot-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/008-dollar-and-tilde-names-are-literal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/009-dollar-and-tilde-dirs-are-literal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "security/core/010-dollar-and-tilde-link-targets-are-literal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/cli/001-cli-help-argument-fails",
+          "level": "cli",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/cli/002-smoke-unknown-option-fails",
+          "level": "cli",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/001-array-three-numbers",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/002-cli-bare-invalid-utf8-byte",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/003-empty-link-target-fails",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/004-nested-empty-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/005-trailing-data-after-number",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/006-duplicate-names-invalid-first-occurrence",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/007-invalid-value-with-existing-tree",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/008-raw-newline-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/009-trailing-double-slash-creates-dir",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/010-unicode-name-and-escaped-content",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/011-array-object-kind",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/012-duplicate-finite-number-2-pow-64",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/013-duplicate-finite-number-dbl-max",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/014-duplicate-finite-number-small-fraction",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/015-duplicate-finite-number-underflow",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/016-duplicate-finite-number-zero-giant-exponent",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/017-duplicate-finite-number-zero-huge-exponent",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/018-duplicate-number-then-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/019-escapes-in-content",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/020-invalid-json-high-surrogate-then-bmp",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/021-invalid-json-infinity-literal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/022-invalid-json-invalid-escape",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/023-invalid-json-line-comment",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/024-invalid-json-lone-low-surrogate",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/025-invalid-json-missing-value",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/026-invalid-json-missing-value-after-valid-member",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/027-invalid-json-non-hex-unicode-escape",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/028-invalid-json-number-leading-zero",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/029-invalid-json-number-lone-minus",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/030-invalid-json-number-no-exponent-digits",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/031-invalid-json-number-no-fraction-digits",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/032-invalid-json-number-plus-sign",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/033-invalid-json-raw-newline-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/034-invalid-json-trailing-comma-array",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/035-invalid-json-trailing-comma-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/036-invalid-json-unquoted-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/037-invalid-json-unterminated-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/038-invalid-utf8-bare-above-u10ffff",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/039-invalid-utf8-bare-encoded-surrogate",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/040-invalid-utf8-bare-overlong",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/041-invalid-utf8-truncated-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/042-large-text",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/043-link-target-literal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/044-name-inner-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/045-name-inner-parent",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/046-name-two-components-trailing-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/047-nul-in-link-target",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/048-root-false",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/049-root-true",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/050-umask-022",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/051-umask-077",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/052-umask-777",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/053-unicode-boundaries-escaped",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/054-unicode-boundaries-raw",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/055-wide-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/056-array-kind-empty",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/057-array-kind-link-nul",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/058-array-kind-scripts",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/059-array-nested-array-kind",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/060-array-script-null-payload",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/061-duplicate-keys-last-object-wins",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/062-duplicate-keys-via-escape",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/063-escaped-slash-nul-surrogates",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/064-invalid-json-array-missing-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/065-invalid-json-array-trailing-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/066-invalid-json-invalid-escape-v",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/067-invalid-json-lone-open-brace",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/068-invalid-json-missing-colon",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/069-invalid-json-number-signed-bare-exponent",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/070-invalid-json-object-trailing-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/071-invalid-json-parse-before-write",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/072-invalid-json-raw-newline-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/073-invalid-json-raw-nul-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/074-invalid-json-trailing-garbage",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/075-invalid-json-uppercase-true",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/076-invalid-json-whitespace-only",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/077-invalid-json-x-1e400",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/078-invalid-json-x-u12xz",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/079-invalid-utf8-above-u10ffff",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/080-invalid-utf8-after-document",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/081-invalid-utf8-encoded-surrogate",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/082-invalid-utf8-lone-continuation-byte",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/083-invalid-utf8-overlong",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/084-large-content",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/085-literal-names-and-link-targets",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/086-modes-umask-000",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/087-modes-umask-022",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/088-modes-umask-077",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/089-modes-umask-777",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/090-name-dot-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/091-name-double-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/092-name-interior-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/093-name-trailing-dot-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/094-nested-tree-unsorted-input",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/095-nul-in-link-target",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/096-nul-in-name-link",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/097-nul-in-name-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/098-root-script-array",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/099-utf8-boundary-chars-escaped",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/100-utf8-boundary-chars-raw",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/101-wide-object-1501-files",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/102-bad-unicode-escape-hex",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/103-closet-example",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/104-deeply-nested-arrays-2000",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/105-duplicate-names-invalid-first-occurrence",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/106-escapes-in-name-and-content",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/107-high-surrogate-then-non-low",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/108-invalid-value-over-existing-file",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/109-link-target-with-nul",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/110-lone-low-surrogate",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/111-name-inner-double-parent-traversal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/112-name-inner-parent-traversal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/113-raw-newline-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/114-raw-tab-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/115-trailing-comma-array",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/116-trailing-comma-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/117-truncated-document-over-existing",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/118-umask-077-file-and-script-modes",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/119-unterminated-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/120-utf8-overlong-nul",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/121-name-double-trailing-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/122-name-trailing-dot-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/123-name-trailing-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/124-name-trailing-slash-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/125-name-trailing-slash-dot-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/126-all-escapes-and-boundaries",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/127-array-array-kind",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/128-array-kind-empty",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/129-array-kind-link-nul",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/130-array-kind-script-nul",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/131-array-kind-scripts",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/132-duplicate-invalid-then-valid",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/133-duplicate-object-then-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/134-duplicate-three-times",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/135-duplicate-via-escaped-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/136-invalid-json-high-surrogate-then-bmp",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/137-invalid-json-high-surrogate-then-char",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/138-invalid-json-high-surrogate-then-escape",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/139-invalid-json-infinity-literal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/140-invalid-json-invalid-escape",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/141-invalid-json-literal-false-suffix",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/142-invalid-json-literal-true-suffix",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/143-invalid-json-literal-truncated-null",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/144-invalid-json-lone-low-surrogate",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/145-invalid-json-missing-colon",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/146-invalid-json-non-hex-unicode-escape",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/147-invalid-json-number-double-minus",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/148-invalid-json-number-exponent-sign-only",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/149-invalid-json-number-hex",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/150-invalid-json-number-leading-zero",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/151-invalid-json-number-lone-minus",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/152-invalid-json-number-no-exponent-digits",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/153-invalid-json-number-no-fraction-digits",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/154-invalid-json-number-no-integer-part",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/155-invalid-json-number-overflow",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/156-invalid-json-number-plus-sign",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/157-invalid-json-raw-newline-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/158-invalid-json-short-unicode-escape",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/159-invalid-json-trailing-comma-array",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/160-invalid-json-trailing-comma-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/161-invalid-json-trailing-garbage",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/162-invalid-json-trailing-nul-byte",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/163-invalid-json-two-high-surrogates",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/164-invalid-json-unclosed-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/165-invalid-json-unquoted-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/166-invalid-json-unterminated-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/167-invalid-utf8-above-u10ffff",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/168-invalid-utf8-bad-continuation",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/169-invalid-utf8-encoded-surrogate",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/170-invalid-utf8-invalid-lead-f5",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/171-invalid-utf8-lone-continuation",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/172-invalid-utf8-overlong-3-byte",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/173-invalid-utf8-overlong-4-byte",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/174-invalid-utf8-overlong-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/175-invalid-utf8-truncated-2-byte",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/176-invalid-utf8-truncated-4-byte",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/177-large-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/178-many-reverse-order-keys",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/179-name-dot-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/180-name-double-slash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/181-name-double-slash-only",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/182-name-inner-parent",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/183-name-leading-dot-dot-prefix",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/184-name-trailing-parent",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/185-nul-in-link-target",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/186-nul-in-script",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/187-umask-000",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/188-umask-022",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/189-umask-077",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/190-umask-777",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/191-comment",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/192-deep-nested-name-parent-traversal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/193-huge-number-value",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/194-infinity-literal",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/195-large-content",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/196-literal-bytes-and-names",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/197-lone-low-surrogate",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/198-name-interior-parent",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/199-raw-newline-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/200-raw-nul-byte-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/201-root-false",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/202-root-true",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/203-trailing-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/204-trailing-separators-and-dot-in-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/205-umask-022",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/206-umask-027",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/207-umask-077",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/208-all-json-escapes",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/209-array-null-payload",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/210-duplicate-keys-earlier-invalid-values-ignored",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/211-invalid-json-a-0x10",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/212-invalid-json-a-1e309",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/213-invalid-json-a-1e999999",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/214-invalid-json-a-infinity",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/215-invalid-json-a-truefalse",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/216-invalid-json-a-ud800-u0041",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/217-invalid-json-a-udc00",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/218-invalid-json-a-uzzzz",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/219-invalid-json-array-trailing-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/220-invalid-json-double-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/221-invalid-json-invalid-escape-q",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/222-invalid-json-leading-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/223-invalid-json-lone-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/224-invalid-json-lone-open-bracket",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/225-invalid-json-missing-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/226-invalid-json-number-bare-exponent",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/227-invalid-json-number-leading-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/228-invalid-json-number-leading-zero",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/229-invalid-json-number-plus-sign",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/230-invalid-json-number-signed-bare-exponent",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/231-invalid-json-number-trailing-dot",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/232-invalid-json-object-trailing-comma",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/233-invalid-json-parse-before-write",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/234-invalid-json-raw-newline-in-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/235-invalid-json-trailing-garbage",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/236-invalid-json-unquoted-name",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/237-invalid-json-unterminated-string",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/238-invalid-json-vertical-tab-after-document",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/239-invalid-utf8-after-document",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/240-invalid-utf8-encoded-surrogate",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/241-invalid-utf8-overlong",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/242-invalid-utf8-truncated",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/243-nul-in-link-target",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/244-nul-in-name-link",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/245-nul-in-name-object",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/246-nul-in-name-script",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/247-script-mode-umask-022",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/248-script-mode-umask-077",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/249-script-mode-umask-777",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/250-unusual-names-colon-newline",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/251-value-extreme-number-0e999999",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/252-value-extreme-number-1-7976931348623157e308",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/253-value-extreme-number-1e-309",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/254-value-extreme-number-1e-999999",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/core/255-name-single-dash",
+          "level": "core",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/001-file-replaces-dangling-symlink",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/002-unwritable-existing-dir-fails",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/003-trailing-slash-dot-existing-dir",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/004-umask-077-modes-on-replace",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/005-umask-777-modes-on-replace",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/006-unwritable-existing-directory-fails",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/007-file-replaces-dangling-symlink",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/008-invalid-value-over-existing-file",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/009-overwrite-mixed",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/010-unwritable-existing-dir",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/011-combined-replace-and-merge",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/012-overwrite-merge-and-symlink-combined",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/013-invalid-value-over-existing-file",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/014-overwrite-mixed",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/015-dangling-symlink-replaced-by-file",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/016-directory-replaces-script",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/017-file-replaces-symlink-to-directory",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/018-script-replaces-script",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/019-script-replaces-symlink-to-directory",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/020-symlink-replaces-script",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/021-link-replaces-directory-link",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/022-link-replaces-file-link",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/023-object-replaces-dangling-link",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/024-object-replaces-file-link",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/025-replace-0700-file-gets-default-mode",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/026-script-replaces-dangling-link",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/027-script-replaces-directory-link",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/028-string-replaces-dangling-link",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/029-string-replaces-directory-link",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/030-unwritable-dir-file-fails",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/031-file-replaces-symlink-to-root",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        },
+        {
+          "case": "upstream/overwrite/032-rerun-is-idempotent",
+          "level": "overwrite",
+          "status": "pass",
+          "reason": ""
+        }
+      ]
+    }
+  ]
+}

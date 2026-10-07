@@ -6,8 +6,8 @@ re-implementation of the conversion scheme used by the
 [json2dir](https://github.com/alurm/json2dir) CLI.
 
 Instead of reading JSON from stdin, userspace hands the JSON bytes to the
-module through a sysfs attribute. The module parses the JSON and creates
-files, directories, symlinks and executable scripts relative to a base
+module through a character device or a sysfs attribute. The module parses the
+JSON and creates files, directories, symlinks and executable scripts relative to a base
 path embedded in the payload.
 
 ## Conversion scheme
@@ -22,18 +22,23 @@ filesystem object under the base directory:
 | `["link", "target"]`      | symbolic link pointing to `target`  |
 | `["script", "contents"]`  | executable file containing `contents` (mode `+x`) |
 
-- A key must be exactly one normal path component. Keys containing `/`,
-  `.` or `..` (or an empty key) are rejected.
-- Before creating an entry, any existing file or symlink at that path is
-  removed (errors are ignored), mirroring the original `json2dir`.
-- Objects may be nested to any depth up to the module's limit (64); the
-  JSON parser also caps the total number of nodes (4096) and the payload
-  is limited to a single page (4096 bytes) because it arrives through a
-  regular sysfs attribute.
+- A key must be exactly one normal path component. Empty names, `.` and `..`,
+  and names containing `/` or NUL are rejected. Other dots are allowed.
+- Existing files and symlinks are removed before replacement; failures are
+  reported. Existing directories are merged only with object values.
+- Input must be valid UTF-8 and JSON. Duplicate object keys are rejected,
+  including keys spelled with different JSON escapes. Parsing and validation
+  finish before filesystem changes begin.
+- Strings retain their decoded byte lengths: embedded NULs are preserved in
+  file/script content and rejected in names, link targets and array kinds.
+- Up to 128 simultaneously open JSON containers (including the root), 16384
+  JSON values, and 4 MiB per request are supported. This includes the required
+  64 nested directories with file, script and link leaves. Parsing, destruction
+  and tree traversal do not recurse on the kernel stack.
 
 ## Interface
 
-Write to `/sys/kernel/json2dir/data` with the payload:
+Write one complete request to `/dev/json2dir` (mode `0600`) with the payload:
 
 ```
 <base-path>\0<json>
@@ -43,7 +48,12 @@ Write to `/sys/kernel/json2dir/data` with the payload:
 or relative to the writing process's cwd) and `<json>` is a JSON object.
 The two parts are separated by a single NUL byte. A successful write
 returns the number of bytes written; on failure a negative errno is
-returned.
+returned. Each write is a separate request, not a stream fragment. The 4 MiB
+limit includes the base path and NUL separator.
+
+The original `/sys/kernel/json2dir/data` endpoint remains available for requests
+that fit within one sysfs page. Use `/dev/json2dir` for larger documents; a
+userspace program must assemble the complete payload before calling `write`.
 
 Example (as root):
 
@@ -126,6 +136,19 @@ lrwxrwxrwx ... symlink -> target path
 == DONE ==
 ```
 
+## Conformance tests
+
+See [testing/README.md](testing/README.md) for the QEMU adapter and full tester
+workflow:
+
+```sh
+nix-shell --run './testing/run-tests.sh --verbose'
+```
+
+The module is loaded only inside QEMU. The unmodified sibling
+`json2dir-tester` supplies the inputs and judges the resulting filesystem trees.
+The [recorded results](testing/results.md) cover all 367 applicable tests.
+
 ## Requirements
 
 - Linux x86-64 kernel matching `linuxPackages_latest` (7.2.x at the time
@@ -135,7 +158,8 @@ lrwxrwxrwx ... symlink -> target path
 
 ## Limitations
 
-- Payload limited to one page (4096 bytes) by the sysfs write path.
+- Requests are limited to 4 MiB through `/dev/json2dir`; the compatibility
+  sysfs endpoint retains its one-page limit.
 - No TOCTOU protection against symlink races, matching the original
   tool's documented caveat.
 - `script` entries are created with `0666` and then have the execute bits
